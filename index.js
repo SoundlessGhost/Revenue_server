@@ -96,17 +96,27 @@ async function run() {
     // Cart Route
 
     app.get("/carts", async (req, res) => {
-      const result = await cartsCollection.find().toArray();
+      const email = req.query.email;
+      if (!email) {
+        res.send([]);
+      }
+      const filter = { email: email };
+      const result = await cartsCollection.find(filter).toArray();
       res.send(result);
     });
 
     app.post("/carts", async (req, res) => {
       const cart = req.body;
-      const result = await cartsCollection.insertOne();
+      const result = await cartsCollection.insertOne(cart);
       res.send(result);
     });
 
-    app.delete("/carts", async (req, res) => {});
+    app.delete("/carts/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await cartsCollection.deleteOne(filter);
+      res.send(result);
+    });
 
     // User Route
 
